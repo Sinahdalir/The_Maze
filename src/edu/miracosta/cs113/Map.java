@@ -2,6 +2,7 @@ package edu.miracosta.cs113;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Scanner;
 
 public class Map{
@@ -135,8 +136,10 @@ public class Map{
     }
 
     public int getColumn(String position){
+    	String temp = "";
         int space = this.currentPosition.indexOf(" ");
-        int column = this.currentPosition.substring(space+1);
+        temp = this.currentPosition.substring(space+1);
+        int column = Integer.parseInt(temp);
         return column;
     }
 
@@ -146,8 +149,10 @@ public class Map{
             int row = 0;
             int column = 0;
             char temp= ' ';
+            String tempString = "";
             while(inputStream.hasNext()){
-                temp = inputStream.next();
+            	tempString =  inputStream.next();
+                temp = tempString.charAt(0);
                 if(temp == 'p'){
                     currentPosition = ""+row+" "+column;
                 }
@@ -160,10 +165,12 @@ public class Map{
                     row++;
                     column = 0;
                 }
+                inputStream.close();
             }
         }catch(FileNotFoundException fnfe){
             System.out.println("Cannot find the file" + fileName);
             System.exit(0);
         }
+        
     }
 }
