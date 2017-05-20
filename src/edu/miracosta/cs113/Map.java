@@ -134,6 +134,10 @@ public class Map{
         	System.out.println("Cannot move to the wall");
         	return false;
         }
+        if(entity != player && map[rowTarget][columnTarget] == 'p')
+        {
+        	
+        }
         char temp = map[row][column];
         map[row][column] = map[rowTarget][columnTarget];
         map[rowTarget][columnTarget] = temp;
