@@ -1,7 +1,9 @@
 package edu.miracosta.cs113;
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.Stack;
 import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class BreadthFirstSearch 
 {
@@ -37,6 +39,36 @@ public class BreadthFirstSearch
 		}
 		return parent;
 		
+	}
+	
+	public static int[] shortestPath(Graph graph, int start, int des)
+	{
+
+		ArrayList<Integer> path = new ArrayList<Integer>();
+		Graph theMaze = null;
+		
+		//Add graph vertices and edges
+		
+		int parent[] = BreadthFirstSearch.breadthFirstSearch(theMaze, start);
+		Stack<Integer> thePath = new Stack<Integer>();
+		int dest = 10;
+		
+		while(parent[dest] != -1)
+		{
+			thePath.push(new Integer(dest));
+		}
+		
+		System.out.println("The Shortest Path is :");
+		while(!thePath.empty())
+		{
+			path.add(thePath.pop());
+		}
+		int[] shortestPath = new int[path.size()];
+		for(int i = 0; i  < path.size() ; i++)
+		{
+			shortestPath[i] = path.get(i);
+		}
+		return shortestPath;
 	}
 
 }
