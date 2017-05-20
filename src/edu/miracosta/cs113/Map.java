@@ -4,13 +4,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Map{
 
     public static final int DEF_ROW = 20;
     public static final int DEF_COLUMN = 20;
-    public static final String DEF_MAPFILE = "def_map.txt";
+    public static final String DEF_MAPFILE = "def_map2.txt";
     
     private char[][] map;
     private Player player;
@@ -144,8 +145,53 @@ public class Map{
         entity.setPosition(rowTarget,columnTarget);
         return true;
     }
-
     public void load(String fileName){
+        try{
+            Scanner inputStream = new Scanner(new FileInputStream(fileName));
+            int temp;
+            String tempString = "";
+            for (int row = 0; inputStream.hasNextLine(); row++){
+            	tempString = inputStream.nextLine();
+            	for (int column = 0; !tempString.isEmpty(); column++)
+            	{
+            		temp = Integer.parseInt(tempString.substring(0, 3));
+            		if (tempString.length() > 3)
+            		{
+            			tempString = tempString.substring(4);
+            		}
+            		else
+            		{
+            			tempString = "";
+            		}
+            		if (temp/100 == 0)
+            		{
+            			map[row][column] = 'x';
+            		}
+            		else if (temp/100 == 1 || temp/100 == 2)
+            		{
+            			map[row][column] = 'o';
+            		}
+            	}
+            }
+            inputStream.close();
+            numRows = map[0].length;
+            numColumns = map.length;
+            if (player == null)
+            {
+            	newPlayer(1,1);
+            }
+            if (exit == null)
+            {
+            	exit = ""+numRows+" "+numColumns;
+            }
+        }catch(FileNotFoundException fnfe){
+            System.out.println("Cannot find the file " + fileName);
+            System.exit(0);
+        }
+        
+    }
+    /*
+    public void loadOld(String fileName){
         try{
             Scanner inputStream = new Scanner(new FileInputStream(fileName));
             int row = 0;
@@ -188,6 +234,7 @@ public class Map{
         }
         
     }
+    */
     public void newPlayer(int row, int column)
     {
     	if (player == null)
@@ -200,7 +247,9 @@ public class Map{
         	player = new Player(row, column);
         	entities.set(0, player);
     	}
+    	map[row][column] = 'p';
     }
+    
     public boolean newEnemy(char type, int row, int column)
     {
     	Enemy newEnemy;
@@ -222,6 +271,34 @@ public class Map{
     	}
     	entities.add(newEnemy);
     	return true;
+    }
+    
+    public char newEnemy(int row, int column)
+    {
+    	Random random = new Random();
+    	Enemy newEnemy;
+    	int type = random.nextInt(3);
+    	if (type == 0)
+    	{
+    		newEnemy = new Enemy("Snake", row, column);
+        	map[row][column] = 's';
+    	}
+    	else if (type == 1)
+    	{
+    		newEnemy = new Enemy("Spider", row, column);
+        	map[row][column] = 'a';
+    	}
+    	else if (type == 2)
+    	{
+    		newEnemy = new Enemy("Cat", row, column);
+        	map[row][column] = 'c';
+    	}
+    	else
+    	{
+    		return 'n';
+    	}
+    	entities.add(newEnemy);
+    	return map[row][column];
     }
     
     public int rows()
