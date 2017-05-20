@@ -12,10 +12,12 @@ public class Map{
     public static final int DEF_ROW = 20;
     public static final int DEF_COLUMN = 20;
     public static final String DEF_MAPFILE = "def_map2.txt";
-    
+
     private char[][] map;
+    private int[][] graphMap;
     private Player player;
-    ArrayList<Entity> entities;
+    private ArrayList<Entity> entities;
+    private ListGraph graph;
     private String exit;
     private int numRows;
     private int numColumns;
@@ -30,6 +32,7 @@ public class Map{
         map = new char[DEF_ROW][DEF_COLUMN];
         entities = new ArrayList<Entity>();
         this.exit = "";
+        graph = new ListGraph(27, false);
         load(DEF_MAPFILE);
         MazeGUI gui = new MazeGUI(this);
     }
@@ -39,6 +42,7 @@ public class Map{
         map = new char[DEF_ROW][DEF_COLUMN];
         entities = new ArrayList<Entity>();
         this.exit = "";
+        graph = new ListGraph(27, false);
         load(fileName);
     }
 
@@ -190,6 +194,44 @@ public class Map{
         }
         
     }
+    public void loadGraphMap(String fileName){
+    	try{
+            Scanner inputStream = new Scanner(new FileInputStream(fileName));
+            int temp;
+            String tempString = "";
+            for (int row = 0; inputStream.hasNextLine(); row++){
+            	tempString = inputStream.nextLine();
+            	for (int column = 0; !tempString.isEmpty(); column++)
+            	{
+            		temp = Integer.parseInt(tempString.substring(0, 3));
+            		if (tempString.length() > 3)
+            		{
+            			tempString = tempString.substring(4);
+            		}
+            		else
+            		{
+            			tempString = "";
+            		}
+            		graphMap[row][column] = temp;
+            	}
+            }
+            inputStream.close();
+        }catch(FileNotFoundException fnfe){
+            System.out.println("Cannot find the file " + fileName);
+            System.exit(0);
+        }
+    }
+    
+    public void loadGraph(){
+    	for (int row = 0; row < graphMap.length; row++)
+    	{
+        	for (int column = 0; column < graphMap.length; column++)
+        	{
+        		
+        	}
+    	}
+    }
+
     /*
     public void loadOld(String fileName){
         try{
