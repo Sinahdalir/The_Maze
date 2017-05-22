@@ -4,17 +4,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Map{
 
     public static final int DEF_ROW = 20;
     public static final int DEF_COLUMN = 20;
-    public static final String DEF_MAPFILE = "def_map.txt";
-    
+    public static final String DEF_MAPFILE = "def_map2.txt";
+
     private char[][] map;
+    private int[][] graphMap;
     private Player player;
-    ArrayList<Entity> entities;
+    private ArrayList<Entity> entities;
+    private ListGraph graph;
     private String exit;
     private int numRows;
     private int numColumns;
@@ -30,6 +33,7 @@ public class Map{
         map = new char[DEF_ROW][DEF_COLUMN];
         entities = new ArrayList<Entity>();
         this.exit = "";
+        graph = new ListGraph(27, false);
         load(DEF_MAPFILE);
         MazeGUI gui = new MazeGUI(this);
         graph = new ListGraph(27, false);
@@ -41,6 +45,7 @@ public class Map{
         map = new char[DEF_ROW][DEF_COLUMN];
         entities = new ArrayList<Entity>();
         this.exit = "";
+        graph = new ListGraph(27, false);
         load(fileName);
     }
 
@@ -142,14 +147,101 @@ public class Map{
         	System.out.println("Cannot move to the wall");
         	return false;
         }
+        if(entity != player && map[rowTarget][columnTarget] == 'p')
+        {
+        	
+        }
         char temp = map[row][column];
         map[row][column] = map[rowTarget][columnTarget];
         map[rowTarget][columnTarget] = temp;
         entity.setPosition(rowTarget,columnTarget);
         return true;
     }
-
     public void load(String fileName){
+        try{
+            Scanner inputStream = new Scanner(new FileInputStream(fileName));
+            int temp;
+            String tempString = "";
+            for (int row = 0; inputStream.hasNextLine(); row++){
+            	tempString = inputStream.nextLine();
+            	for (int column = 0; !tempString.isEmpty(); column++)
+            	{
+            		temp = Integer.parseInt(tempString.substring(0, 3));
+            		if (tempString.length() > 3)
+            		{
+            			tempString = tempString.substring(4);
+            		}
+            		else
+            		{
+            			tempString = "";
+            		}
+            		if (temp/100 == 0)
+            		{
+            			map[row][column] = 'x';
+            		}
+            		else if (temp/100 == 1 || temp/100 == 2)
+            		{
+            			map[row][column] = 'o';
+            		}
+            	}
+            }
+            inputStream.close();
+            numRows = map[0].length;
+            numColumns = map.length;
+            if (player == null)
+            {
+            	newPlayer(1,1);
+            }
+            if (exit == null)
+            {
+            	exit = ""+numRows+" "+numColumns;
+            }
+        }catch(FileNotFoundException fnfe){
+            System.out.println("Cannot find the file " + fileName);
+            System.exit(0);
+        }
+        
+    }
+    public void loadGraphMap(String fileName){
+    	try{
+            Scanner inputStream = new Scanner(new FileInputStream(fileName));
+            int temp;
+            String tempString = "";
+            for (int row = 0; inputStream.hasNextLine(); row++){
+            	tempString = inputStream.nextLine();
+            	for (int column = 0; !tempString.isEmpty(); column++)
+            	{
+            		temp = Integer.parseInt(tempString.substring(0, 3));
+            		if (tempString.length() > 3)
+            		{
+            			tempString = tempString.substring(4);
+            		}
+            		else
+            		{
+            			tempString = "";
+            		}
+            		graphMap[row][column] = temp;
+            	}
+            }
+            inputStream.close();
+        }catch(FileNotFoundException fnfe){
+            System.out.println("Cannot find the file " + fileName);
+            System.exit(0);
+        }
+    }
+    
+    public void loadGraph(){
+    	for (int row = 0; row < graphMap.length; row++)
+    	{
+        	for (int column = 0; column < graphMap.length; column++)
+        	{
+        		
+        	}
+    	}
+    }
+
+    /*
+    public void loadOld(String fileName){
         try{
             Scanner inputStream = new Scanner(new FileInputStream(fileName));
             int row = 0;
@@ -237,6 +329,7 @@ public class Map{
         }
         
     }
+    */
     public void newPlayer(int row, int column)
     {
     	if (player == null)
@@ -249,7 +342,9 @@ public class Map{
         	player = new Player(row, column);
         	entities.set(0, player);
     	}
+    	map[row][column] = 'p';
     }
+    
     public boolean newEnemy(char type, int row, int column)
     {
     	Enemy newEnemy;
@@ -271,6 +366,34 @@ public class Map{
     	}
     	entities.add(newEnemy);
     	return true;
+    }
+    
+    public char newEnemy(int row, int column)
+    {
+    	Random random = new Random();
+    	Enemy newEnemy;
+    	int type = random.nextInt(3);
+    	if (type == 0)
+    	{
+    		newEnemy = new Enemy("Snake", row, column);
+        	map[row][column] = 's';
+    	}
+    	else if (type == 1)
+    	{
+    		newEnemy = new Enemy("Spider", row, column);
+        	map[row][column] = 'a';
+    	}
+    	else if (type == 2)
+    	{
+    		newEnemy = new Enemy("Cat", row, column);
+        	map[row][column] = 'c';
+    	}
+    	else
+    	{
+    		return 'n';
+    	}
+    	entities.add(newEnemy);
+    	return map[row][column];
     }
     
     public int rows()

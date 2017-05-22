@@ -20,7 +20,7 @@ public class MazeGUI extends JFrame implements KeyListener
 	static ImageIcon	SPRITE_SPIDER			= new ImageIcon("Sprite_Spider.png");
 	static ImageIcon	SPRITE_CAT			= new ImageIcon("Sprite_Cat.png");
 	
-	static int			LIMITED_VIEW_DISTANCE	= 3;
+	static int			LIMITED_VIEW_DISTANCE	= -1;
 	
 	Map					map;
 	JFrame				frame;
@@ -47,7 +47,6 @@ public class MazeGUI extends JFrame implements KeyListener
 		
 		buildLabels();
 		buildGUI();
-		frame.setResizable(false);
 		frame.pack();
 		frame.addKeyListener(this);
 		frame.setVisible(true);
@@ -156,22 +155,32 @@ public class MazeGUI extends JFrame implements KeyListener
 	{
 		if (newChar == 'x')
 		{
-			labels[row][column] = new JLabel(SPRITE_WALL);
+			labels[row][column].setIcon(SPRITE_WALL);
 			return true;
 		}
 		else if (newChar == 'o')
 		{
-			labels[row][column] = new JLabel(SPRITE_OPEN);
+			labels[row][column].setIcon(SPRITE_OPEN);
 			return true;
 		}
 		else if (newChar == 'p')
 		{
-			labels[row][column] = new JLabel(SPRITE_PLAYER);
+			labels[row][column].setIcon(SPRITE_PLAYER);
 			return true;
 		}
-		else if (newChar == 'e')
+		else if (newChar == 's')
 		{
-			labels[row][column] = new JLabel(SPRITE_OPEN);
+			labels[row][column].setIcon(SPRITE_SNAKE);
+			return true;
+		}
+		else if (newChar == 'a')
+		{
+			labels[row][column].setIcon(SPRITE_SPIDER);
+			return true;
+		}
+		else if (newChar == 'c')
+		{
+			labels[row][column].setIcon(SPRITE_CAT);
 			return true;
 		}
 		else
@@ -220,6 +229,11 @@ public class MazeGUI extends JFrame implements KeyListener
 						map.getColumnPosition() - 1);
 			}
 			
+		}
+		else if (key == KeyEvent.VK_SPACE)
+		{
+			System.out.println("(^'-')> <( SPACE! )");
+			changeLabel(map.newEnemy(10,10),10,10);
 		}
 	}
 	
