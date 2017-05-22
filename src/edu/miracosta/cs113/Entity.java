@@ -2,11 +2,11 @@ package edu.miracosta.cs113;
 
 import javax.swing.ImageIcon;
 
-public abstract class Entity
+public class Entity
 {
-	private int rowPosition;
-	private int columnPosition;
-	private String name;
+	protected int row;
+	protected int column;
+	protected String name;
 	
 	/** Default constructor
 	 * 
@@ -14,21 +14,21 @@ public abstract class Entity
 	public Entity()
 	{
 		name = "UNDEFINED";
-		rowPosition = 1;
-		columnPosition = 1;
+		row = 1;
+		column = 1;
 	}
 	
-	/** constructor that takes int the name, rowTarget and columnTarget
+	/** constructor that takes in the name, row and column
 	 * 
 	 * @param name The name of entity
-	 * @param rowTarget int number of row
-	 * @param columnTarget int number of column
+	 * @param row row-wise position
+	 * @param column column-wise position
 	 */
-	public Entity(String name, int rowTarget, int columnTarget)
+	public Entity(String name, int row, int column)
 	{
 		this.name = name;
-		rowPosition = rowTarget;
-		columnPosition = columnTarget;
+		this.row = row;
+		this.column = column;
 	}
 	
 	/**Mutator Method
@@ -38,8 +38,8 @@ public abstract class Entity
 	 */
 	public void setPosition(int row, int column)
 	{
-		rowPosition = row;
-		columnPosition = column;
+		this.row = row;
+		this.column = column;
 	}
 	
 	/** Accessor method
@@ -48,7 +48,7 @@ public abstract class Entity
 	 */
 	public int getRow()
 	{
-		return rowPosition;
+		return row;
 	}
 	
 	/** Accessor method
@@ -57,6 +57,6 @@ public abstract class Entity
 	 */
 	public int getColumn()
 	{
-		return columnPosition;
+		return column;
 	}
 }

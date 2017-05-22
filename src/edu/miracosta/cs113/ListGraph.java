@@ -73,6 +73,10 @@ public class ListGraph extends AbstractGraph implements Graph
 		return target;
 	}
 	
+	public int getNumV()
+	{
+		return edges.length;
+	}
 	
 
 }

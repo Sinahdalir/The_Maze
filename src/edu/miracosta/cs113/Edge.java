@@ -2,12 +2,21 @@ package edu.miracosta.cs113;
 
 public class Edge 
 {
-	private int dest;
-	private int source;
+	private int dest = -1;
+	private int source = -1;
+	private int id = -1;
 	private double weight;
 	
 	/**
-	 * Default constructer
+	 * Default constructor
+	 */
+	public Edge()
+	{
+		weight = Double.POSITIVE_INFINITY;
+	}
+	
+	/**
+	 * Default constructor
 	 * @param source
 	 * @param dest
 	 */
@@ -19,7 +28,7 @@ public class Edge
 	}
 	
 	/**
-	 * Constructer with weight
+	 * Constructor with weight
 	 * @param source
 	 * @param dest
 	 * @param w
@@ -39,12 +48,27 @@ public class Edge
 		return dest;
 	}
 	
+	public void setDest(int dest) {
+		this.dest = dest;
+	}
+	
 	/** Accessor Methods
 	 * 
 	 * @return int the source vertex
 	 */
 	public int getSource() {
 		return source;
+	}
+	
+	public void setSource(int source) {
+		this.source = source;
+	}
+	public int getId() {
+		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	/** Accessor Methods
@@ -53,6 +77,10 @@ public class Edge
 	 */
 	public double getWeight() {
 		return weight;
+	}
+	
+	public void setWeight(double weight) {
+		this.weight = weight;
 	}
 
 	/** Return string with given instance variables 

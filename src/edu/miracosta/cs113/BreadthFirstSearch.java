@@ -41,26 +41,25 @@ public class BreadthFirstSearch
 		
 	}
 	
-	public static int[] shortestPath(Graph graph, int start, int des)
+	public static int[] shortestPath(Graph graph, int start, int dest)
 	{
-
 		ArrayList<Integer> path = new ArrayList<Integer>();
-		Graph theMaze = null;
 		
 		//Add graph vertices and edges
 		
-		int parent[] = BreadthFirstSearch.breadthFirstSearch(theMaze, start);
+		int parent[] = BreadthFirstSearch.breadthFirstSearch(graph, start);
 		Stack<Integer> thePath = new Stack<Integer>();
-		int dest = 10;
 		
 		while(parent[dest] != -1)
 		{
 			thePath.push(new Integer(dest));
+			dest = parent[dest];
 		}
 		
 		System.out.println("The Shortest Path is :");
 		while(!thePath.empty())
 		{
+			System.out.print(" " + thePath.peek() + ",");
 			path.add(thePath.pop());
 		}
 		int[] shortestPath = new int[path.size()];

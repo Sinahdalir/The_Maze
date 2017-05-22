@@ -15,12 +15,13 @@ public class MazeGUI extends JFrame implements KeyListener
 {
 	static ImageIcon	SPRITE_WALL				= new ImageIcon("Sprite_Wall.png");
 	static ImageIcon	SPRITE_OPEN				= new ImageIcon("Sprite_Open.png");
+	static ImageIcon	SPRITE_EXIT				= new ImageIcon("Sprite_Exit.png");
 	static ImageIcon	SPRITE_PLAYER			= new ImageIcon("Sprite_Player.png");
 	static ImageIcon	SPRITE_SNAKE			= new ImageIcon("Sprite_Snake.png");
 	static ImageIcon	SPRITE_SPIDER			= new ImageIcon("Sprite_Spider.png");
-	static ImageIcon	SPRITE_CAT			= new ImageIcon("Sprite_Cat.png");
+	static ImageIcon	SPRITE_CAT				= new ImageIcon("Sprite_Cat.png");
 	
-	static int			LIMITED_VIEW_DISTANCE	= -1;
+	static int			LIMITED_VIEW_DISTANCE	= 4;
 	
 	Map					map;
 	JFrame				frame;
@@ -32,7 +33,7 @@ public class MazeGUI extends JFrame implements KeyListener
 		frame = new JFrame("*~ The A-MAZE-ing Adventure ~* by Group B");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		labels = new JLabel[map.rows()][map.columns()];
-		if (LIMITED_VIEW_DISTANCE * 2 + 2 >=map.rows() || LIMITED_VIEW_DISTANCE * 2 + 2 >=map.columns())
+		if (LIMITED_VIEW_DISTANCE * 2 + 2 >= map.rows() || LIMITED_VIEW_DISTANCE * 2 + 2 >= map.columns())
 		{
 			LIMITED_VIEW_DISTANCE = -1;
 		}
@@ -102,7 +103,7 @@ public class MazeGUI extends JFrame implements KeyListener
 		{
 			for (int column = 0; column < map.columns(); column++)
 			{
-				char nextChar = map.get(row, column);
+				char nextChar = map.getChar(row, column);
 				if (nextChar == 'x')
 				{
 					labels[row][column] = new JLabel(SPRITE_WALL);
@@ -117,7 +118,7 @@ public class MazeGUI extends JFrame implements KeyListener
 				}
 				else if (nextChar == 'e')
 				{
-					labels[row][column] = new JLabel(SPRITE_OPEN);
+					labels[row][column] = new JLabel(SPRITE_EXIT);
 				}
 				else if (nextChar == 's')
 				{
@@ -137,7 +138,7 @@ public class MazeGUI extends JFrame implements KeyListener
 	
 	public boolean swapLabels(int row1, int column1, int row2, int column2)
 	{
-		if (map.get(row1, column1) == 'n' || map.get(row2, column2) == 'n')
+		if (map.getChar(row1, column1) == 'n' || map.getChar(row2, column2) == 'n')
 		{
 			return false;
 		}
@@ -196,44 +197,27 @@ public class MazeGUI extends JFrame implements KeyListener
 		if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP)
 		{
 			System.out.println("(^'-'^) <( UP! or W )");
-			if (map.movePlayer("up"))
-			{
-				swapLabels(map.getRowPosition(), map.getColumnPosition(), map.getRowPosition() + 1,
-						map.getColumnPosition());
-			}
+			map.movePlayer("up");
 		}
 		else if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT)
 		{
 			System.out.println("<('-'^) <( LEFT! or A )");
-			if (map.movePlayer("left"))
-			{
-				swapLabels(map.getRowPosition(), map.getColumnPosition(), map.getRowPosition(),
-						map.getColumnPosition() + 1);
-			}
+			map.movePlayer("left");
 		}
 		else if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN)
 		{
 			System.out.println("(v'-'v) <( DOWN! or S )");
-			if (map.movePlayer("down"))
-			{
-				swapLabels(map.getRowPosition(), map.getColumnPosition(), map.getRowPosition() - 1,
-						map.getColumnPosition());
-			}
+			map.movePlayer("down");
 		}
 		else if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT)
 		{
 			System.out.println("(^'-')> <( RIGHT! or D )");
-			if (map.movePlayer("right"))
-			{
-				swapLabels(map.getRowPosition(), map.getColumnPosition(), map.getRowPosition(),
-						map.getColumnPosition() - 1);
-			}
-			
+			map.movePlayer("right");
 		}
 		else if (key == KeyEvent.VK_SPACE)
 		{
 			System.out.println("(^'-')> <( SPACE! )");
-			changeLabel(map.newEnemy(10,10),10,10);
+			changeLabel(map.newEnemy(10, 10), 10, 10);
 		}
 	}
 	
