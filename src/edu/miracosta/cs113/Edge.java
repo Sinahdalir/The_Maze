@@ -8,12 +8,16 @@ public class Edge
 	
 	public Edge(int source, int dest)
 	{
-		
+		this.source = source;
+		this.dest = dest;
+		weight = Double.POSITIVE_INFINITY;
 	}
 	
 	public Edge(int source, int dest, double w)
 	{
-		
+		this.source = source;
+		this.dest = dest;
+		this.weight = w;
 	}
 
 	public int getDest() {

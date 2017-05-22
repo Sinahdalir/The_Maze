@@ -18,6 +18,7 @@ public class Map{
     private String exit;
     private int numRows;
     private int numColumns;
+    private ListGraph graph;
 
     public static void main(String[] args)
     {
@@ -31,6 +32,8 @@ public class Map{
         this.exit = "";
         load(DEF_MAPFILE);
         MazeGUI gui = new MazeGUI(this);
+        graph = new ListGraph(27, false);
+        
     }
 
 
@@ -50,6 +53,11 @@ public class Map{
         }
     }
 
+    public void addEdges()
+    {
+    	
+    }
+    
     public void setExit(String position){
         if(position.length() > 5){
             System.out.println("String length is too long");
@@ -150,7 +158,52 @@ public class Map{
             String tempString = "";
             while(inputStream.hasNextLine()){
             	tempString = inputStream.nextLine();
-            	for (int i = 0; !tempString.isEmpty(); i++)
+            	while( !tempString.isEmpty())
+            	{
+            		temp = tempString.charAt(0);
+            		tempString = tempString.substring(1);
+                    if(temp == 'p'){
+                        newPlayer(row, column);
+                    }
+                    else if(temp == 'e'){
+                        exit = ""+row+" "+column;
+                    }
+                    else if(temp == 's'){
+                        newEnemy('s', row, column);
+                    }
+                    else if(temp == 'a'){
+                        newEnemy('a', row, column);
+                    }
+                    else if(temp == 'c'){
+                        newEnemy('c', row, column);
+                    }
+                    map[row][column] = temp;
+                    column++;
+            	}
+            	row++;
+            	column = 0;
+            }
+            numRows = map[0].length;
+            numColumns = map.length;
+            inputStream.close();
+        }catch(FileNotFoundException fnfe){
+            System.out.println("Cannot find the file " + fileName);
+            System.exit(0);
+        }
+        
+    }
+    
+    public void loadJunction(String fileName)
+    {
+        try{
+            Scanner inputStream = new Scanner(new FileInputStream(fileName));
+            int row = 0;
+            int column = 0;
+            char temp= ' ';
+            String tempString = "";
+            while(inputStream.hasNextInt()){
+            	tempString = inputStream.nextLine();
+            	while( !tempString.isEmpty())
             	{
             		temp = tempString.charAt(0);
             		tempString = tempString.substring(1);

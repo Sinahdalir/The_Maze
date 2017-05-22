@@ -7,6 +7,7 @@ public abstract class Entity
 	private int rowPosition;
 	private int columnPosition;
 	private String name;
+	
 	public Entity()
 	{
 		name = "UNDEFINED";
