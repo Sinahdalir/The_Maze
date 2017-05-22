@@ -21,7 +21,6 @@ public class Map{
     private String exit;
     private int numRows;
     private int numColumns;
-    private ListGraph graph;
 
     public static void main(String[] args)
     {
