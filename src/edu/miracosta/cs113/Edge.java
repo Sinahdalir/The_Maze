@@ -119,8 +119,6 @@ public class Edge
 			return false;
 		if (source != other.source)
 			return false;
-		if (Double.doubleToLongBits(weight) != Double.doubleToLongBits(other.weight))
-			return false;
 		return true;
 	}
 
