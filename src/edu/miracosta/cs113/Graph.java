@@ -33,7 +33,7 @@ public interface Graph
 	 * 
 	 * @param source The source vertex
 	 * @param dest The destination vertex
-	 * @return The Edge between these two vetices or
+	 * @return The Edge between these two vertices or
 	 * 			an Edge with a weight of Double.POSITIVE_INFINITY if there is no edge
 	 */
 	Edge getEdge(int source, int dest);

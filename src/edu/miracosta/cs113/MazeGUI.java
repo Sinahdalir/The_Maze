@@ -9,7 +9,11 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 public class MazeGUI extends JFrame implements KeyListener
 {
@@ -48,6 +52,7 @@ public class MazeGUI extends JFrame implements KeyListener
 		
 		buildLabels();
 		buildGUI();
+		frame.setResizable(false);
 		frame.pack();
 		frame.addKeyListener(this);
 		frame.setVisible(true);
@@ -190,6 +195,18 @@ public class MazeGUI extends JFrame implements KeyListener
 		}
 	}
 	
+	public void win()
+	{
+		JOptionPane.showMessageDialog(frame,
+			    "YOU WIN!");
+	}
+	
+	public void lose()
+	{
+		JOptionPane.showMessageDialog(frame,
+			    "YOU LOSE!");
+	}
+	
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
@@ -214,10 +231,18 @@ public class MazeGUI extends JFrame implements KeyListener
 			System.out.println("(^'-')> <( RIGHT! or D )");
 			map.movePlayer("right");
 		}
+		else if (key == KeyEvent.VK_COMMA)
+		{
+			win();
+		}
+		else if (key == KeyEvent.VK_PERIOD)
+		{
+			lose();
+		}
 		else if (key == KeyEvent.VK_SPACE)
 		{
 			System.out.println("(^'-')> <( SPACE! )");
-			changeLabel(map.newEnemy(10, 10), 10, 10);
+			map.newEnemy();
 		}
 	}
 	

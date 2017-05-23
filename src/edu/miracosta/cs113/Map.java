@@ -2,13 +2,18 @@ package edu.miracosta.cs113;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
+/** Contains a char[][], int[][] and ListGraph representing a maze, as well as
+ * reference to a GUI program in order to represent a maze
+ * 
+ * @author Matt Saucedo <saucedomatthew@gmail.com>
+ * @version 1.0 */
 public class Map
 {
+	/** file to read from in the default constructor */
 	public static final String	DEF_MAPFILE	= "def_map2.txt";
 	
 	private String				mapFile;
@@ -18,34 +23,46 @@ public class Map
 	private ArrayList<Enemy>	enemies;
 	private ListGraph			graph;
 	private Entity				exit;
-	private boolean				win			= false;
 	MazeGUI						gui;
 	private int					numRows		= -1;
 	private int					numColumns	= -1;
 	
+	/** Driver Method, running this runs the entire project
+	 * 
+	 * @param args */
 	public static void main(String[] args)
 	{
 		Map map = new Map();
 		System.out.print(map);
 	}
 	
+	/** Default Constructor */
 	public Map()
 	{
 		mapFile = DEF_MAPFILE;
 		enemies = new ArrayList<Enemy>();
-		graph = new ListGraph(27, false);
 		load(DEF_MAPFILE);
-		
+		newEnemy();
 	}
 	
+	/** Constructor
+	 * 
+	 * @param fileName
+	 * Uses this file as the data for the layout of the Maze */
 	public Map(String fileName)
 	{
 		mapFile = fileName;
 		enemies = new ArrayList<Enemy>();
-		graph = new ListGraph(27, false);
 		load(fileName);
+		newEnemy();
 	}
 	
+	/** Reads in the file, filling out the char[][] and int[][] accordingly. If
+	 * there is not a player, or there is not an exit, that variable will be
+	 * generated at (1,1) or (numRows-2,numColumns-2) respectively
+	 * 
+	 * @param fileName
+	 * the file to be used for the maze structure */
 	public void load(String fileName)
 	{
 		try
@@ -144,9 +161,8 @@ public class Map
 							System.out.println(graphMap[row - 1][column] % 100);
 							edges[graphMap[row - 1][column] % 100] = new Edge();
 							edges[graphMap[row - 1][column] % 100].setWeight(0.00);
-							edges[graphMap[row - 1][column] % 100].setSource(graphMap[row][column] % 100);
 						}
-						else if (edges[graphMap[row - 1][column] % 100].getSource() < 0)
+						if (edges[graphMap[row - 1][column] % 100].getSource() < 0)
 						{
 							edges[graphMap[row - 1][column] % 100].setSource(graphMap[row][column] % 100);
 						}
@@ -165,9 +181,8 @@ public class Map
 							System.out.println(graphMap[row + 1][column] % 100);
 							edges[graphMap[row + 1][column] % 100] = new Edge();
 							edges[graphMap[row + 1][column] % 100].setWeight(0.00);
-							edges[graphMap[row + 1][column] % 100].setSource(graphMap[row][column] % 100);
 						}
-						else if (edges[graphMap[row + 1][column] % 100].getSource() < 0)
+						if (edges[graphMap[row + 1][column] % 100].getSource() < 0)
 						{
 							edges[graphMap[row + 1][column] % 100].setSource(graphMap[row][column] % 100);
 						}
@@ -186,9 +201,8 @@ public class Map
 							System.out.println(graphMap[row][column - 1] % 100);
 							edges[graphMap[row][column - 1] % 100] = new Edge();
 							edges[graphMap[row][column - 1] % 100].setWeight(0.00);
-							edges[graphMap[row][column - 1] % 100].setSource(graphMap[row][column] % 100);
 						}
-						else if (edges[graphMap[row][column - 1] % 100].getSource() < 0)
+						if (edges[graphMap[row][column - 1] % 100].getSource() < 0)
 						{
 							edges[graphMap[row][column - 1] % 100].setSource(graphMap[row][column] % 100);
 						}
@@ -207,9 +221,8 @@ public class Map
 							System.out.println(graphMap[row][column + 1] % 100);
 							edges[graphMap[row][column + 1] % 100] = new Edge();
 							edges[graphMap[row][column + 1] % 100].setWeight(0.00);
-							edges[graphMap[row][column + 1] % 100].setSource(graphMap[row][column] % 100);
 						}
-						else if (edges[graphMap[row][column + 1] % 100].getSource() < 0)
+						if (edges[graphMap[row][column + 1] % 100].getSource() < 0)
 						{
 							edges[graphMap[row][column + 1] % 100].setSource(graphMap[row][column] % 100);
 						}
@@ -225,7 +238,6 @@ public class Map
 					if (edges[nextTile % 100] == null)
 					{
 						edges[nextTile % 100] = new Edge();
-						edges[nextTile % 100].setId(nextTile % 100);
 						edges[nextTile % 100].setWeight(0.00);
 					}
 					if (edges[nextTile % 100].getId() < 0)
@@ -238,6 +250,7 @@ public class Map
 		}
 		for (int numEdge = 0; numEdge < edges.length; numEdge++)
 		{
+			System.out.println(edges[numEdge]);
 			graph.insert(edges[numEdge]);
 		}
 	}
@@ -318,6 +331,13 @@ public class Map
 		return 33;
 	}
 	
+	/** accessor method
+	 * 
+	 * @param row
+	 * row position of char to get
+	 * @param column
+	 * column position of char to get
+	 * @return returns char representing tile at given coordinates */
 	public char getChar(int row, int column)
 	{
 		char letter = 'n';
@@ -337,6 +357,12 @@ public class Map
 		
 	}
 	
+	/** executes the move function, with the player and the given direction as
+	 * the input, and executes the turns of all enemies afterward
+	 * 
+	 * @param direction
+	 * the direction for the player to move in
+	 * @return returns true if the move was successful, false otherwise */
 	public boolean movePlayer(String direction)
 	{
 		boolean returnBoolean = move(player, direction);
@@ -344,54 +370,111 @@ public class Map
 		return returnBoolean;
 	}
 	
+	/** loops through the ArrayList of Enemies, executing the doEnemyTurn
+	 * function for each */
 	public void doEnemyTurns()
 	{
-		for (int i = 0; i < enemies.size(); i++)
+		for (int enemyNum = 0; enemyNum < enemies.size(); enemyNum++)
 		{
-			Enemy nextEnemy = enemies.get(i);
-			/*
-			 * // fresh start if (nextEnemy.getLastRow() == nextEnemy.getRow()
-			 * && nextEnemy.getColumn() == nextEnemy.getLastColumn()) {
-			 * 
-			 * } // on a vertex else
-			 */if (graphMap[nextEnemy.getRow()][nextEnemy.getColumn()] / 100 == 2)
+			doEnemyTurn(enemies.get(enemyNum));
+		}
+	}
+	
+	private void doEnemyTurn(Enemy enemy)
+	{
+		//just spawned
+		if (enemy.getRow() != enemy.getLastRow() || enemy.getColumn() != enemy.getLastColumn())
+		{
+			enemy.setTargetVertex(player.getLastVertex());
+			enemy.setCoordinates(
+					DijkstrasAlgorithm.dijkstrasAlgorithm(graph, graphMap[enemy.getRow()][enemy.getColumn()] % 100,
+							new int[graph.getNumV()], new double[graph.getNumV()]));
+			if (enemy.getRow() > 0 && graphMap[enemy.getRow() - 1][enemy.getColumn()] % 100 == graph
+					.getEdge(graphMap[enemy.getRow() - 1][enemy.getColumn()] % 100, enemy.getTargetVertex()).getId())
 			{
-				if ((graphMap[nextEnemy.getRow() - 1][nextEnemy.getColumn()] / 100 == 1
-						|| graphMap[nextEnemy.getRow() - 1][nextEnemy.getColumn()] / 100 == 2)
-						&& (nextEnemy.getRow() - 1 != nextEnemy.getLastRow()
-								|| nextEnemy.getColumn() != nextEnemy.getLastColumn()))
-				{
-					move(nextEnemy, "UP");
-				}
-				else if ((graphMap[nextEnemy.getRow() + 1][nextEnemy.getColumn()] / 100 == 1
-						|| graphMap[nextEnemy.getRow() + 1][nextEnemy.getColumn()] / 100 == 2)
-						&& (nextEnemy.getRow() + 1 != nextEnemy.getLastRow()
-								|| nextEnemy.getColumn() != nextEnemy.getLastColumn()))
-				{
-					move(nextEnemy, "DOWN");
-				}
-				else if ((graphMap[nextEnemy.getRow()][nextEnemy.getColumn() - 1] / 100 == 1
-						|| graphMap[nextEnemy.getRow()][nextEnemy.getColumn() - 1] / 100 == 2)
-						&& (nextEnemy.getRow() != nextEnemy.getLastRow()
-								|| nextEnemy.getColumn() - 1 != nextEnemy.getLastColumn()))
-				{
-					move(nextEnemy, "LEFT");
-				}
-				else if ((graphMap[nextEnemy.getRow()][nextEnemy.getColumn() + 1] / 100 == 1
-						|| graphMap[nextEnemy.getRow()][nextEnemy.getColumn() + 1] / 100 == 2)
-						&& (nextEnemy.getRow() != nextEnemy.getLastRow()
-								|| nextEnemy.getColumn() + 1 != nextEnemy.getLastColumn()))
-				{
-					move(nextEnemy, "RIGHT");
-				}
-				else
-				{
-					randomMove(nextEnemy);
-				}
+				move(enemy, "UP");
+			}
+			else if (enemy.getRow() < numRows - 1 && graphMap[enemy.getRow() + 1][enemy.getColumn()] % 100 == graph
+					.getEdge(graphMap[enemy.getRow() + 1][enemy.getColumn()] % 100, enemy.getTargetVertex()).getId())
+			{
+				move(enemy, "DOWN");
+			}
+			else if (enemy.getColumn() > 0 && graphMap[enemy.getRow()][enemy.getColumn() - 1] % 100 == graph
+					.getEdge(graphMap[enemy.getRow()][enemy.getColumn() - 1] % 100, enemy.getTargetVertex()).getId())
+			{
+				move(enemy, "LEFT");
+			}
+			else if (enemy.getColumn() < numColumns - 1
+					&& graphMap[enemy.getRow()][enemy.getColumn() + 1] % 100 == graph
+							.getEdge(graphMap[enemy.getRow()][enemy.getColumn() + 1] % 100, enemy.getTargetVertex())
+							.getId())
+			{
+				move(enemy, "RIGHT");
+			}
+		}
+		//hit a vertex
+		else if (graphMap[enemy.getRow()][enemy.getColumn()] / 100 == 1)
+		{
+			if (enemy.coordinates == null || player.getLastVertex() != enemy.getTargetVertex())
+			{
+				enemy.setTargetVertex(player.getLastVertex());
+				enemy.setCoordinates(
+						DijkstrasAlgorithm.dijkstrasAlgorithm(graph, graphMap[enemy.getRow()][enemy.getColumn()] % 100,
+								new int[graph.getNumV()], new double[graph.getNumV()]));
+			}
+			if (enemy.getRow() > 0 && graphMap[enemy.getRow() - 1][enemy.getColumn()] % 100 == graph
+					.getEdge(graphMap[enemy.getRow() - 1][enemy.getColumn()] % 100, enemy.getTargetVertex()).getId())
+			{
+				move(enemy, "UP");
+			}
+			else if (enemy.getRow() < numRows - 1 && graphMap[enemy.getRow() + 1][enemy.getColumn()] % 100 == graph
+					.getEdge(graphMap[enemy.getRow() + 1][enemy.getColumn()] % 100, enemy.getTargetVertex()).getId())
+			{
+				move(enemy, "DOWN");
+			}
+			else if (enemy.getColumn() > 0 && graphMap[enemy.getRow()][enemy.getColumn() - 1] % 100 == graph
+					.getEdge(graphMap[enemy.getRow()][enemy.getColumn() - 1] % 100, enemy.getTargetVertex()).getId())
+			{
+				move(enemy, "LEFT");
+			}
+			else if (enemy.getColumn() < numColumns - 1
+					&& graphMap[enemy.getRow()][enemy.getColumn() + 1] % 100 == graph
+							.getEdge(graphMap[enemy.getRow()][enemy.getColumn() + 1] % 100, enemy.getTargetVertex())
+							.getId())
+			{
+				move(enemy, "RIGHT");
+			}
+		}
+		//going through an edge
+		else
+		{
+			if ((graphMap[enemy.getRow() - 1][enemy.getColumn()] / 100 == 1
+					|| graphMap[enemy.getRow() - 1][enemy.getColumn()] / 100 == 2)
+					&& (enemy.getRow() - 1 != enemy.getLastRow() || enemy.getColumn() != enemy.getLastColumn()))
+			{
+				move(enemy, "UP");
+			}
+			else if ((graphMap[enemy.getRow() + 1][enemy.getColumn()] / 100 == 1
+					|| graphMap[enemy.getRow() + 1][enemy.getColumn()] / 100 == 2)
+					&& (enemy.getRow() + 1 != enemy.getLastRow() || enemy.getColumn() != enemy.getLastColumn()))
+			{
+				move(enemy, "DOWN");
+			}
+			else if ((graphMap[enemy.getRow()][enemy.getColumn() - 1] / 100 == 1
+					|| graphMap[enemy.getRow()][enemy.getColumn() - 1] / 100 == 2)
+					&& (enemy.getRow() != enemy.getLastRow() || enemy.getColumn() - 1 != enemy.getLastColumn()))
+			{
+				move(enemy, "LEFT");
+			}
+			else if ((graphMap[enemy.getRow()][enemy.getColumn() + 1] / 100 == 1
+					|| graphMap[enemy.getRow()][enemy.getColumn() + 1] / 100 == 2)
+					&& (enemy.getRow() != enemy.getLastRow() || enemy.getColumn() + 1 != enemy.getLastColumn()))
+			{
+				move(enemy, "RIGHT");
 			}
 			else
 			{
-				randomMove(nextEnemy);
+				randomMove(enemy);
 			}
 		}
 	}
@@ -420,7 +503,10 @@ public class Map
 		{
 			possiblePaths.add("RIGHT");
 		}
-		move(entity, possiblePaths.get(random.nextInt(possiblePaths.size())));
+		if (possiblePaths.size() > 0)
+		{
+			move(entity, possiblePaths.get(random.nextInt(possiblePaths.size())));
+		}
 	}
 	
 	private boolean move(Entity entity, String direction)
@@ -475,6 +561,11 @@ public class Map
 			player.setLives(player.getLives() - 1);
 			removeEnemy((Enemy) entity);
 			System.out.println("Current lives: " + player.getLives());
+			newEnemy();
+			if (player.getLives() <= 0)
+			{
+				gui.lose();
+			}
 		}
 		else
 		{
@@ -483,6 +574,11 @@ public class Map
 				player.setLives(player.getLives() - 1);
 				removeEnemy(getEnemy(rowTarget, columnTarget));
 				System.out.println("Current lives: " + player.getLives());
+				newEnemy();
+				if (player.getLives() <= 0)
+				{
+					gui.lose();
+				}
 			}
 			if (graphMap[rowTarget][columnTarget] / 100 == 1)
 			{
@@ -490,8 +586,7 @@ public class Map
 			}
 			if (map[rowTarget][columnTarget] == 'e')
 			{
-				System.out.println("YOU WIN");
-				win = true;
+				gui.win();
 			}
 			else
 			{
@@ -505,8 +600,7 @@ public class Map
 		return true;
 	}
 	
-	/*
-	 * public void loadOld(String fileName){ try{ Scanner inputStream = new
+	/* public void loadOld(String fileName){ try{ Scanner inputStream = new
 	 * Scanner(new FileInputStream(fileName)); int row = 0; int column = 0; char
 	 * temp= ' '; String tempString = ""; while(inputStream.hasNextLine()){
 	 * tempString = inputStream.nextLine(); while( !tempString.isEmpty()) { temp
@@ -534,9 +628,15 @@ public class Map
 	 * inputStream.close(); }catch(FileNotFoundException fnfe){
 	 * System.out.println("Cannot find the file " + fileName); System.exit(0); }
 	 * 
-	 * }
-	 */
+	 * } */
 	
+	/** mutator method, alters the position of the exit, altering the Map and
+	 * GUI accordingly. if there is no exit, creates a new exit at the position
+	 * 
+	 * @param row
+	 * row position for exit
+	 * @param column
+	 * column position for exit */
 	public void setExit(int row, int column)
 	{
 		if (exit != null)
@@ -549,6 +649,14 @@ public class Map
 		gui.changeLabel('e', row, column);
 	}
 	
+	/** mutator method, alters the position of the player, altering the Map and
+	 * GUI accordingly. if there is no player, creates a new player at the
+	 * position
+	 * 
+	 * @param row
+	 * row position for player
+	 * @param column
+	 * column position for player */
 	public void setPlayer(int row, int column)
 	{
 		if (player != null)
@@ -561,10 +669,21 @@ public class Map
 		gui.changeLabel('p', row, column);
 	}
 	
-	public char newEnemy(int row, int column)
+	/** creates a new enemy of a random type at a random open position, and
+	 * alters the GUI accordingly
+	 * 
+	 * @return returns Enemy created */
+	public Enemy newEnemy()
 	{
 		Random random = new Random();
 		Enemy newEnemy = null;
+		int row = random.nextInt(numRows);
+		int column = random.nextInt(numColumns);
+		while (graphMap[row][column] / 100 != 1)
+		{
+			row = random.nextInt(numRows);
+			column = random.nextInt(numColumns);
+		}
 		int type = random.nextInt(3);
 		if (type == 0)
 		{
@@ -585,9 +704,17 @@ public class Map
 			gui.changeLabel('c', row, column);
 		}
 		enemies.add(newEnemy);
-		return map[row][column];
+		return newEnemy;
 	}
 	
+	/** accessor method
+	 * 
+	 * @param row
+	 * row position of Enemy to find
+	 * @param column
+	 * column position of Enemy to find
+	 * @return returns the Enemy at the position, if there is no Enemy there,
+	 * returns null */
 	public Enemy getEnemy(int row, int column)
 	{
 		for (int i = 0; i < enemies.size(); i++)
@@ -600,6 +727,10 @@ public class Map
 		return null;
 	}
 	
+	/** removes an Enemy from the map, the gui, and the ArrayList of enemies
+	 * 
+	 * @param enemy
+	 * Enemy to remove */
 	public void removeEnemy(Enemy enemy)
 	{
 		map[enemy.getRow()][enemy.getColumn()] = 'o';
@@ -607,21 +738,33 @@ public class Map
 		enemies.remove(enemy);
 	}
 	
+	/** accessor method
+	 * 
+	 * @return returns row position of the player */
 	public int getRowPosition()
 	{
 		return player.getRow();
 	}
 	
+	/** accessor method
+	 * 
+	 * @return returns column position of the player */
 	public int getColumnPosition()
 	{
 		return player.getColumn();
 	}
 	
+	/** accessor method
+	 * 
+	 * @return returns number of rows in the map */
 	public int rows()
 	{
 		return (map.length);
 	}
 	
+	/** accessor method
+	 * 
+	 * @return returns number of columns in the map */
 	public int columns()
 	{
 		return (map[0].length);
