@@ -33,7 +33,6 @@ public class Map
 	public static void main(String[] args)
 	{
 		Map map = new Map();
-		System.out.print(map);
 	}
 	
 	/** Default Constructor */
@@ -42,6 +41,8 @@ public class Map
 		mapFile = DEF_MAPFILE;
 		enemies = new ArrayList<Enemy>();
 		load(DEF_MAPFILE);
+		newEnemy();
+		newEnemy();
 		newEnemy();
 	}
 	
@@ -54,6 +55,8 @@ public class Map
 		mapFile = fileName;
 		enemies = new ArrayList<Enemy>();
 		load(fileName);
+		newEnemy();
+		newEnemy();
 		newEnemy();
 	}
 	
@@ -120,6 +123,7 @@ public class Map
 			{
 				player = new Player(1, 1);
 				map[1][1] = 'p';
+				player.setLastVertex(0);
 			}
 			if (exit == null)
 			{
@@ -383,38 +387,48 @@ public class Map
 	private void doEnemyTurn(Enemy enemy)
 	{
 		//just spawned
-		if (enemy.getRow() != enemy.getLastRow() || enemy.getColumn() != enemy.getLastColumn())
+		if (enemy.getRow() == enemy.getLastRow() && enemy.getColumn() == enemy.getLastColumn())
 		{
 			enemy.setTargetVertex(player.getLastVertex());
-			enemy.setCoordinates(
-					DijkstrasAlgorithm.dijkstrasAlgorithm(graph, graphMap[enemy.getRow()][enemy.getColumn()] % 100,
-							new int[graph.getNumV()], new double[graph.getNumV()]));
+			enemy.setCoordinates(DijkstrasAlgorithm.dijkstrasAlgorithm(graph, enemy.getCurrentVertex(),
+					new int[graph.getNumV()], new double[graph.getNumV()]));
 			if (enemy.getRow() > 0 && graphMap[enemy.getRow() - 1][enemy.getColumn()] % 100 == graph
-					.getEdge(graphMap[enemy.getRow() - 1][enemy.getColumn()] % 100, enemy.getTargetVertex()).getId())
+					.getEdge(enemy.getCurrentVertex(), enemy.nextVertex()).getId())
 			{
-				move(enemy, "UP");
+				if (!move(enemy, "UP"))
+				{
+					randomMove(enemy);
+				}
 			}
 			else if (enemy.getRow() < numRows - 1 && graphMap[enemy.getRow() + 1][enemy.getColumn()] % 100 == graph
-					.getEdge(graphMap[enemy.getRow() + 1][enemy.getColumn()] % 100, enemy.getTargetVertex()).getId())
+					.getEdge(enemy.getCurrentVertex(), enemy.nextVertex()).getId())
 			{
-				move(enemy, "DOWN");
+				if (!move(enemy, "DOWN"))
+				{
+					randomMove(enemy);
+				}
 			}
 			else if (enemy.getColumn() > 0 && graphMap[enemy.getRow()][enemy.getColumn() - 1] % 100 == graph
-					.getEdge(graphMap[enemy.getRow()][enemy.getColumn() - 1] % 100, enemy.getTargetVertex()).getId())
+					.getEdge(enemy.getCurrentVertex(), enemy.nextVertex()).getId())
 			{
-				move(enemy, "LEFT");
+				if (!move(enemy, "LEFT"))
+				{
+					randomMove(enemy);
+				}
 			}
-			else if (enemy.getColumn() < numColumns - 1
-					&& graphMap[enemy.getRow()][enemy.getColumn() + 1] % 100 == graph
-							.getEdge(graphMap[enemy.getRow()][enemy.getColumn() + 1] % 100, enemy.getTargetVertex())
-							.getId())
+			else if (enemy.getColumn() < numColumns - 1 && graphMap[enemy.getRow()][enemy.getColumn() + 1]
+					% 100 == graph.getEdge(enemy.getCurrentVertex(), enemy.nextVertex()).getId())
 			{
-				move(enemy, "RIGHT");
+				if (!move(enemy, "RIGHT"))
+				{
+					randomMove(enemy);
+				}
 			}
 		}
 		//hit a vertex
 		else if (graphMap[enemy.getRow()][enemy.getColumn()] / 100 == 1)
 		{
+			enemy.setCurrentVertex(graphMap[enemy.getRow()][enemy.getColumn()] % 100);
 			if (enemy.coordinates == null || player.getLastVertex() != enemy.getTargetVertex())
 			{
 				enemy.setTargetVertex(player.getLastVertex());
@@ -422,52 +436,52 @@ public class Map
 						DijkstrasAlgorithm.dijkstrasAlgorithm(graph, graphMap[enemy.getRow()][enemy.getColumn()] % 100,
 								new int[graph.getNumV()], new double[graph.getNumV()]));
 			}
-			if (enemy.getRow() > 0 && graphMap[enemy.getRow() - 1][enemy.getColumn()] % 100 == graph
-					.getEdge(graphMap[enemy.getRow() - 1][enemy.getColumn()] % 100, enemy.getTargetVertex()).getId())
+			if (enemy.getCurrentVertex() != enemy.getTargetVertex())
 			{
-				move(enemy, "UP");
-			}
-			else if (enemy.getRow() < numRows - 1 && graphMap[enemy.getRow() + 1][enemy.getColumn()] % 100 == graph
-					.getEdge(graphMap[enemy.getRow() + 1][enemy.getColumn()] % 100, enemy.getTargetVertex()).getId())
-			{
-				move(enemy, "DOWN");
-			}
-			else if (enemy.getColumn() > 0 && graphMap[enemy.getRow()][enemy.getColumn() - 1] % 100 == graph
-					.getEdge(graphMap[enemy.getRow()][enemy.getColumn() - 1] % 100, enemy.getTargetVertex()).getId())
-			{
-				move(enemy, "LEFT");
-			}
-			else if (enemy.getColumn() < numColumns - 1
-					&& graphMap[enemy.getRow()][enemy.getColumn() + 1] % 100 == graph
-							.getEdge(graphMap[enemy.getRow()][enemy.getColumn() + 1] % 100, enemy.getTargetVertex())
-							.getId())
-			{
-				move(enemy, "RIGHT");
+				if (enemy.getRow() > 0 && graphMap[enemy.getRow() - 1][enemy.getColumn()] % 100 == graph
+						.getEdge(enemy.getCurrentVertex(), enemy.nextVertex()).getId())
+				{
+					move(enemy, "UP");
+				}
+				else if (enemy.getRow() < numRows - 1 && graphMap[enemy.getRow() + 1][enemy.getColumn()] % 100 == graph
+						.getEdge(enemy.getCurrentVertex(), enemy.nextVertex()).getId())
+				{
+					move(enemy, "DOWN");
+				}
+				else if (enemy.getColumn() > 0 && graphMap[enemy.getRow()][enemy.getColumn() - 1] % 100 == graph
+						.getEdge(enemy.getCurrentVertex(), enemy.nextVertex()).getId())
+				{
+					move(enemy, "LEFT");
+				}
+				else if (enemy.getColumn() < numColumns - 1 && graphMap[enemy.getRow()][enemy.getColumn() + 1]
+						% 100 == graph.getEdge(enemy.getCurrentVertex(), enemy.nextVertex()).getId())
+				{
+					move(enemy, "RIGHT");
+				}
 			}
 		}
 		//going through an edge
 		else
 		{
-			if ((graphMap[enemy.getRow() - 1][enemy.getColumn()] / 100 == 1
-					|| graphMap[enemy.getRow() - 1][enemy.getColumn()] / 100 == 2)
+			if ((map[enemy.getRow() - 1][enemy.getColumn()] == 'o' || map[enemy.getRow() - 1][enemy.getColumn()] == 'p')
 					&& (enemy.getRow() - 1 != enemy.getLastRow() || enemy.getColumn() != enemy.getLastColumn()))
 			{
 				move(enemy, "UP");
 			}
-			else if ((graphMap[enemy.getRow() + 1][enemy.getColumn()] / 100 == 1
-					|| graphMap[enemy.getRow() + 1][enemy.getColumn()] / 100 == 2)
+			else if ((map[enemy.getRow() + 1][enemy.getColumn()] == 'o'
+					|| map[enemy.getRow() + 1][enemy.getColumn()] == 'p')
 					&& (enemy.getRow() + 1 != enemy.getLastRow() || enemy.getColumn() != enemy.getLastColumn()))
 			{
 				move(enemy, "DOWN");
 			}
-			else if ((graphMap[enemy.getRow()][enemy.getColumn() - 1] / 100 == 1
-					|| graphMap[enemy.getRow()][enemy.getColumn() - 1] / 100 == 2)
+			else if ((map[enemy.getRow()][enemy.getColumn() - 1] == 'o'
+					|| map[enemy.getRow()][enemy.getColumn() - 1] == 'p')
 					&& (enemy.getRow() != enemy.getLastRow() || enemy.getColumn() - 1 != enemy.getLastColumn()))
 			{
 				move(enemy, "LEFT");
 			}
-			else if ((graphMap[enemy.getRow()][enemy.getColumn() + 1] / 100 == 1
-					|| graphMap[enemy.getRow()][enemy.getColumn() + 1] / 100 == 2)
+			else if ((map[enemy.getRow()][enemy.getColumn() + 1] == 'o'
+					|| map[enemy.getRow()][enemy.getColumn() + 1] == 'p')
 					&& (enemy.getRow() != enemy.getLastRow() || enemy.getColumn() + 1 != enemy.getLastColumn()))
 			{
 				move(enemy, "RIGHT");
@@ -483,23 +497,22 @@ public class Map
 	{
 		Random random = new Random();
 		ArrayList<String> possiblePaths = new ArrayList<String>();
-		if (graphMap[entity.getRow() - 1][entity.getColumn()] / 100 == 1
-				|| graphMap[entity.getRow() - 1][entity.getColumn()] / 100 == 2)
+		if (map[entity.getRow() - 1][entity.getColumn()] == 'o' || map[entity.getRow() - 1][entity.getColumn()] == 'p')
 		{
 			possiblePaths.add("UP");
 		}
-		else if (graphMap[entity.getRow() + 1][entity.getColumn()] / 100 == 1
-				|| graphMap[entity.getRow() + 1][entity.getColumn()] / 100 == 2)
+		else if (map[entity.getRow() + 1][entity.getColumn()] == 'o'
+				|| map[entity.getRow() + 1][entity.getColumn()] == 'p')
 		{
 			possiblePaths.add("DOWN");
 		}
-		else if (graphMap[entity.getRow()][entity.getColumn() - 1] / 100 == 1
-				|| graphMap[entity.getRow()][entity.getColumn() - 1] / 100 == 2)
+		else if (map[entity.getRow()][entity.getColumn() - 1] == 'o'
+				|| map[entity.getRow()][entity.getColumn() - 1] == 'p')
 		{
 			possiblePaths.add("LEFT");
 		}
-		else if (graphMap[entity.getRow()][entity.getColumn() + 1] / 100 == 1
-				|| graphMap[entity.getRow()][entity.getColumn() + 1] / 100 == 2)
+		else if (map[entity.getRow()][entity.getColumn() + 1] == 'o'
+				|| map[entity.getRow()][entity.getColumn() + 1] == 'p')
 		{
 			possiblePaths.add("RIGHT");
 		}
@@ -556,25 +569,18 @@ public class Map
 			System.out.println("Cannot move to the wall");
 			return false;
 		}
-		if (entity != player && map[rowTarget][columnTarget] == 'p')
-		{
-			player.setLives(player.getLives() - 1);
-			removeEnemy((Enemy) entity);
-			System.out.println("Current lives: " + player.getLives());
-			newEnemy();
-			if (player.getLives() <= 0)
-			{
-				gui.lose();
-			}
-		}
-		else
+		if (entity == player)
 		{
 			if (map[rowTarget][columnTarget] != 'o' && map[rowTarget][columnTarget] != 'e')
 			{
 				player.setLives(player.getLives() - 1);
 				removeEnemy(getEnemy(rowTarget, columnTarget));
 				System.out.println("Current lives: " + player.getLives());
-				newEnemy();
+				if (enemies.size() < 10)
+				{
+					newEnemy();
+					newEnemy();
+				}
 				if (player.getLives() <= 0)
 				{
 					gui.lose();
@@ -596,8 +602,34 @@ public class Map
 				entity.setPosition(rowTarget, columnTarget);
 				gui.swapLabels(row, column, rowTarget, columnTarget);
 			}
+			return true;
 		}
-		return true;
+		else if (map[rowTarget][columnTarget] == 'p')
+		{
+			player.setLives(player.getLives() - 1);
+			removeEnemy((Enemy) entity);
+			System.out.println("Current lives: " + player.getLives());
+			if (enemies.size() < 10)
+			{
+				newEnemy();
+				newEnemy();
+			}
+			if (player.getLives() <= 0)
+			{
+				gui.lose();
+			}
+			return true;
+		}
+		else if (map[rowTarget][columnTarget] == 'o')
+		{
+			char temp = map[row][column];
+			map[row][column] = map[rowTarget][columnTarget];
+			map[rowTarget][columnTarget] = temp;
+			entity.setPosition(rowTarget, columnTarget);
+			gui.swapLabels(row, column, rowTarget, columnTarget);
+			return true;
+		}
+		return false;
 	}
 	
 	/* public void loadOld(String fileName){ try{ Scanner inputStream = new
@@ -704,6 +736,7 @@ public class Map
 			gui.changeLabel('c', row, column);
 		}
 		enemies.add(newEnemy);
+		newEnemy.setCurrentVertex(graphMap[newEnemy.getRow()][newEnemy.getColumn()] % 100);
 		return newEnemy;
 	}
 	

@@ -25,7 +25,7 @@ public class MazeGUI extends JFrame implements KeyListener
 	static ImageIcon	SPRITE_SPIDER			= new ImageIcon("Sprite_Spider.png");
 	static ImageIcon	SPRITE_CAT				= new ImageIcon("Sprite_Cat.png");
 	
-	static int			LIMITED_VIEW_DISTANCE	= 4;
+	static int			LIMITED_VIEW_DISTANCE	= -1;
 	
 	Map					map;
 	JFrame				frame;

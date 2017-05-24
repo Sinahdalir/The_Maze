@@ -5,21 +5,20 @@ import java.util.Random;
 
 public class Enemy extends Entity
 {
-	int	lastRow;
-	int	lastColumn;
-	int[] coordinates;
-	int targetVertex;
+	int		lastRow;
+	int		lastColumn;
+	int[]	coordinates;
+	int		targetVertex;
+	int		currentVertex;
 	
-	/**
-	 * Full Constructor
+	/** Full Constructor
 	 * 
 	 * @param name
-	 *            of Entity
+	 * of Entity
 	 * @param rowTarget
-	 *            , number of row
+	 * , number of row
 	 * @param columnTarget,
-	 *            number of column
-	 */
+	 * number of column */
 	public Enemy(String name, int row, int column)
 	{
 		super(name, row, column);
@@ -34,6 +33,16 @@ public class Enemy extends Entity
 		lastColumn = this.column;
 		this.row = row;
 		this.column = column;
+	}
+	
+	public void setCurrentVertex(int currentVertex)
+	{
+		this.currentVertex = currentVertex;
+	}
+	
+	public int getCurrentVertex()
+	{
+		return currentVertex;
 	}
 	
 	public void setTargetVertex(int targetVertex)
@@ -55,6 +64,7 @@ public class Enemy extends Entity
 	{
 		return lastColumn;
 	}
+	
 	public void setCoordinates(int[] coordinates)
 	{
 		this.coordinates = coordinates;
@@ -62,6 +72,18 @@ public class Enemy extends Entity
 	
 	public int nextVertex()
 	{
-		return coordinates[0];
+		if (currentVertex != targetVertex)
+		{
+			int next = targetVertex;
+			while (coordinates[next] != currentVertex)
+			{
+				next = coordinates[next];
+			}
+			return next;
+		}
+		else
+		{
+			return currentVertex;
+		}
 	}
 }

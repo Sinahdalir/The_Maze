@@ -49,9 +49,12 @@ public class ListGraph extends AbstractGraph implements Graph
 	public void insert(Edge edge)
 	{
 		edges[edge.getSource()].add(edge);
+		Edge nextEdge;
 		if (!isDirected())
 		{
-			edges[edge.getDest()].add(new Edge(edge.getDest(), edge.getSource(), edge.getWeight()));
+			nextEdge = new Edge(edge.getDest(), edge.getSource(), edge.getWeight());
+			nextEdge.setId(edge.getId());
+			edges[edge.getDest()].add(nextEdge);
 		}
 	}
 	
@@ -69,16 +72,14 @@ public class ListGraph extends AbstractGraph implements Graph
 	 * @return the edge between these two vertices */
 	public Edge getEdge(int source, int dest)
 	{
-		Edge target = new Edge(source, dest, Double.POSITIVE_INFINITY);
 		for (Edge edge : edges[source])
 		{
-			if (edge.equals(target))
+			if (edge.getDest() == dest)
 			{
 				return edge;
 			}
 		}
-		
-		return target;
+		return null;
 	}
 	
 }

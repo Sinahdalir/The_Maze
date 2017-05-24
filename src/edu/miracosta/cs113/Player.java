@@ -2,7 +2,7 @@ package edu.miracosta.cs113;
 
 public class Player extends Entity
 {
-	static int DEF_LIVES = 5;
+	static int DEF_LIVES = 10;
 	int lives;
 	int lastVertex;
 	
